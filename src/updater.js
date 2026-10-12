@@ -60,8 +60,10 @@ function check() {
 
 function install() {
   if (autoUpdater && status.state === 'ready') {
-    // isSilent=false para que se vea el progreso; isForceRunAfter=true para reabrir la app al terminar
-    autoUpdater.quitAndInstall(false, true);
+    // isSilent=true: el instalador corre sin ventanas (probado a mano: con false pedía 2 clics
+    // extra, "Siguiente" y "Terminar", que no tiene sentido mostrarle a nadie acá). isForceRunAfter
+    // reabre la app sola al terminar.
+    autoUpdater.quitAndInstall(true, true);
     return true;
   }
   return false;
