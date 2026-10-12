@@ -65,12 +65,15 @@ npm run dist       # genera el instalador en dist/ (Windows x64)
 
 ## Publicar una versión nueva (actualización automática)
 
-La app instalada busca versiones nuevas en **GitHub Releases** del repositorio `Ulisesfig/figueroatrainer-admin`
-(ver `build.publish` en `package.json`). Para publicar una:
+La app instalada busca versiones nuevas en `/updates` del backend (`figueroatrainer-backend-production`), que a su
+vez sirve los archivos desde un bucket privado de Railway (ver `build.publish` en `package.json` y
+`src/controllers/updatesController.js` en el backend). No hace falta ningún token de GitHub. Para publicar una:
 
-1. Subí el número de `version` en `package.json` (por ejemplo 1.1.0 → 1.2.0).
-2. Creá un token de GitHub con permiso `repo` y definilo: `set GH_TOKEN=tu_token` (PowerShell: `$env:GH_TOKEN="tu_token"`).
-3. Ejecutá `npm run release`: compila el instalador y lo sube como versión nueva.
+1. Subí el número de `version` en `package.json` (por ejemplo 1.2.4 → 1.2.5).
+2. Completá `tools/.env.updates` con las credenciales del bucket (una sola vez; mirá `tools/.env.updates.example`
+   y `railway bucket credentials --bucket ft-admin-updates` si hay que regenerarlas).
+3. Ejecutá `npm run release`: compila el instalador (`npm run dist`) y sube el `.exe`, el `.blockmap` y el
+   `latest.yml` al bucket (`npm run publish-update`).
 
 Las apps instaladas la descargan solas y avisan para reiniciar. Los avisos de escritorio y las actualizaciones solo
 funcionan en la app instalada (no con `npm start`).

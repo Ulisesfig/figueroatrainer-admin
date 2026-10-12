@@ -1,3 +1,5 @@
 node_modules/
 dist/
 test/shots/
+.env
+tools/.env.updates

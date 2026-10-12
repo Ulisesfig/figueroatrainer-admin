@@ -1,4 +1,4 @@
-// Actualizaciones automáticas (electron-updater + GitHub Releases).
+// Actualizaciones automáticas (electron-updater + feed propio en /updates del backend).
 // La app busca versiones nuevas al abrir y cada 4 horas, las descarga en segundo plano y
 // avisa cuando están listas para instalarse (también se instalan solas al cerrar la app).
 const { app } = require('electron');
