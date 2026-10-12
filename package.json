@@ -1,0 +1,73 @@
+{
+  "name": "figueroa-trainer-admin",
+  "productName": "Figueroa Trainer Admin",
+  "version": "1.2.2",
+  "description": "Programa de escritorio para administrar alumnos, planes, ejercicios y tienda de Figueroa Trainer",
+  "main": "main.js",
+  "author": "Figueroa Trainer",
+  "license": "UNLICENSED",
+  "private": true,
+  "scripts": {
+    "start": "electron .",
+    "smoke": "electron test/smoke.js",
+    "icon": "electron tools/make-icon.js",
+    "dist": "electron-builder --win --x64",
+    "pack": "electron-builder --win --x64 --dir",
+    "release": "electron-builder --win --x64 --publish always"
+  },
+  "devDependencies": {
+    "@fontsource/barlow-condensed": "^5.3.0",
+    "@fontsource/ibm-plex-mono": "^5.3.0",
+    "@fontsource/ibm-plex-sans": "^5.3.0",
+    "electron": "^44.4.5",
+    "electron-builder": "^26.15.3"
+  },
+  "build": {
+    "appId": "com.figueroatrainer.admin",
+    "productName": "Figueroa Trainer Admin",
+    "copyright": "Figueroa Trainer",
+    "directories": {
+      "output": "dist",
+      "buildResources": "build"
+    },
+    "files": [
+      "main.js",
+      "preload.js",
+      "src/**/*",
+      "renderer/**/*",
+      "build/icon.png",
+      "package.json"
+    ],
+    "win": {
+      "target": [
+        {
+          "target": "nsis",
+          "arch": [
+            "x64"
+          ]
+        }
+      ],
+      "icon": "build/icon.png"
+    },
+    "nsis": {
+      "oneClick": false,
+      "perMachine": false,
+      "allowToChangeInstallationDirectory": true,
+      "createDesktopShortcut": true,
+      "createStartMenuShortcut": true,
+      "shortcutName": "Figueroa Trainer Admin",
+      "language": "3082"
+    },
+    "publish": [
+      {
+        "provider": "github",
+        "owner": "Ulisesfig",
+        "repo": "figueroatrainer-admin",
+        "releaseType": "release"
+      }
+    ]
+  },
+  "dependencies": {
+    "electron-updater": "^6.8.9"
+  }
+}

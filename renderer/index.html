@@ -1,0 +1,23 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <!-- La app no carga nada externo salvo miniaturas de YouTube/imágenes de productos (https).
+         Toda la lógica y los estilos son locales; las llamadas a la API salen por el proceso principal. -->
+    <meta
+      http-equiv="Content-Security-Policy"
+      content="default-src 'none'; script-src 'self'; style-src 'self' 'unsafe-inline'; font-src 'self'; img-src 'self' data: https:; connect-src 'none'; base-uri 'none'; form-action 'none'"
+    />
+    <title>Figueroa Trainer Admin</title>
+    <link rel="stylesheet" href="css/tokens.css" />
+    <link rel="stylesheet" href="css/layout.css" />
+    <link rel="stylesheet" href="css/components.css" />
+    <link rel="stylesheet" href="css/views.css" />
+  </head>
+  <body>
+    <div id="root"></div>
+    <noscript>Esta aplicación necesita JavaScript.</noscript>
+    <script type="module" src="js/app.js"></script>
+  </body>
+</html>
