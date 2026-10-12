@@ -24,6 +24,7 @@ todo lo que se cambia acá se ve enseguida en los otros lados. Solo entran cuent
 - **Vaciar todos los mensajes** de una vez, pidiendo escribir "VACIAR" para confirmar (1.2.1).
 - Aviso de escritorio cuando llega un mensaje nuevo, igual que para pagos y registros.
 - El formulario de Contacto ahora pide el teléfono (opcional): si lo dejan, se puede **responder por WhatsApp** además de por email (1.2.2).
+- **Actualizaciones automáticas activadas**: el repositorio de releases ([Ulisesfig/figueroatrainer-admin](https://github.com/Ulisesfig/figueroatrainer-admin)) ya está publicado y funcionando (1.2.3).
 
 ## Novedades de la versión 1.1
 
