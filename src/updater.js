@@ -1,7 +1,22 @@
 // Actualizaciones automáticas (electron-updater + feed propio en /updates del backend).
 // La app busca versiones nuevas al abrir y cada 4 horas, las descarga en segundo plano y
 // avisa cuando están listas para instalarse (también se instalan solas al cerrar la app).
-const { app } = require('electron');
+// Antes de habilitar la instalación se verifica latest.sig (ver updateSignature.js).
+const { app, net } = require('electron');
+const updateSignature = require('./updateSignature');
+
+const FEED_URL = process.env.FT_UPDATE_FEED || 'https://figueroatrainer-backend-production.up.railway.app/updates/';
+
+async function hasValidSignature(info) {
+  const sha512 = info?.files?.[0]?.sha512 || info?.sha512;
+  try {
+    const resp = await net.fetch(`${FEED_URL}latest.sig?v=${encodeURIComponent(info.version)}`, { cache: 'no-store' });
+    if (!resp.ok) return false;
+    return updateSignature.verify(info.version, sha512, await resp.text());
+  } catch (_) {
+    return false;
+  }
+}
 
 const CHECK_EVERY_MS = 4 * 60 * 60 * 1000;
 const FIRST_CHECK_DELAY_MS = 15 * 1000;
@@ -32,8 +47,10 @@ function init({ onStatus }) {
     return;
   }
 
+  if (!app.isPackaged) autoUpdater.forceDevUpdateConfig = true; // solo pruebas (FT_FORCE_UPDATER)
   autoUpdater.autoDownload = true;
-  autoUpdater.autoInstallOnAppQuit = true;
+  // Se activa recién cuando la firma de la versión descargada resulta válida.
+  autoUpdater.autoInstallOnAppQuit = false;
   autoUpdater.allowPrerelease = false;
   autoUpdater.logger = null;
 
@@ -41,7 +58,16 @@ function init({ onStatus }) {
   autoUpdater.on('update-available', (info) => setStatus({ state: 'downloading', latest: info.version, percent: 0 }));
   autoUpdater.on('update-not-available', () => setStatus({ state: 'none', checkedAt: Date.now() }));
   autoUpdater.on('download-progress', (progress) => setStatus({ state: 'downloading', percent: Math.round(progress.percent || 0) }));
-  autoUpdater.on('update-downloaded', (info) => setStatus({ state: 'ready', latest: info.version, percent: 100 }));
+  autoUpdater.on('update-downloaded', async (info) => {
+    setStatus({ state: 'downloading', latest: info.version, percent: 100 });
+    if (await hasValidSignature(info)) {
+      autoUpdater.autoInstallOnAppQuit = true;
+      setStatus({ state: 'ready', latest: info.version, percent: 100 });
+    } else {
+      autoUpdater.autoInstallOnAppQuit = false;
+      setStatus({ state: 'rejected', latest: info.version, message: 'Firma de la actualización inválida' });
+    }
+  });
   autoUpdater.on('error', (error) => {
     // Sin internet o sin versiones publicadas: no es un problema para quien usa el programa.
     setStatus({ state: 'error', message: String(error?.message || error).split('\n')[0].slice(0, 200) });

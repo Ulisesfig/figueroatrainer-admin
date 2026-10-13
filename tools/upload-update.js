@@ -10,6 +10,7 @@ require('dotenv').config({ path: require('path').join(__dirname, '.env.updates')
 const fs = require('fs');
 const path = require('path');
 const { S3Client, PutObjectCommand } = require('@aws-sdk/client-s3');
+const updateSignature = require('../src/updateSignature');
 
 const DIST_DIR = path.join(__dirname, '..', 'dist');
 
@@ -17,6 +18,7 @@ const CONTENT_TYPES = {
   '.yml': 'text/yaml; charset=utf-8',
   '.exe': 'application/x-msdownload',
   '.blockmap': 'application/octet-stream',
+  '.sig': 'text/plain; charset=utf-8',
 };
 
 function requireEnv(name) {
@@ -44,11 +46,24 @@ async function main() {
   if (!fs.existsSync(ymlPath)) {
     throw new Error(`No existe ${ymlPath}. Corré "npm run dist" primero.`);
   }
-  const installerName = fs.readFileSync(ymlPath, 'utf8').match(/^path:\s*(.+)$/m)?.[1]?.trim();
-  if (!installerName) {
-    throw new Error('No se pudo leer el nombre del instalador desde latest.yml');
+  const yml = fs.readFileSync(ymlPath, 'utf8');
+  const installerName = yml.match(/^path:\s*(.+)$/m)?.[1]?.trim();
+  const version = yml.match(/^version:\s*(.+)$/m)?.[1]?.trim();
+  const sha512 = yml.match(/^sha512:\s*(.+)$/m)?.[1]?.trim();
+  if (!installerName || !version || !sha512) {
+    throw new Error('No se pudo leer instalador, versión o sha512 desde latest.yml');
   }
-  const files = ['latest.yml', installerName, `${installerName}.blockmap`]
+
+  // La app instalada solo instala si latest.sig es una firma válida de esta versión + sha512.
+  const privateKey = Buffer.from(requireEnv('UPDATES_SIGNING_KEY'), 'base64').toString('utf8');
+  const signature = updateSignature.sign(version, sha512, privateKey);
+  if (!updateSignature.verify(version, sha512, signature)) {
+    throw new Error('UPDATES_SIGNING_KEY no corresponde a la clave pública de src/updateSignature.js');
+  }
+  fs.writeFileSync(path.join(DIST_DIR, 'latest.sig'), signature);
+
+  // latest.yml va último: hasta que se sube, las apps siguen viendo la versión anterior completa.
+  const files = [installerName, `${installerName}.blockmap`, 'latest.sig', 'latest.yml']
     .filter((name) => fs.existsSync(path.join(DIST_DIR, name)));
 
   if (!files.length) {

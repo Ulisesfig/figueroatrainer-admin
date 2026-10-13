@@ -101,6 +101,7 @@ export function settingsView(container, _params, app) {
       ready: `La versión ${status.latest} está lista para instalarse.`,
       none: 'Tenés la última versión.',
       error: 'No se pudo comprobar si hay actualizaciones (¿sin internet?). Se vuelve a intentar solo.',
+      rejected: `Se descargó la versión ${status.latest || ''} pero su firma no es válida, así que no se instala. Avisale a quien publica las actualizaciones.`,
     }[status.state] || '';
     mount(updateHost,
       h('div', { class: 'row', style: { justifyContent: 'space-between', gap: '16px' } }, h('div', null, h('div', null, text), h('div', { class: 'faint', style: { fontSize: 'var(--fs-xs)' } }, `Versión instalada: ${status.version || '—'}`)),

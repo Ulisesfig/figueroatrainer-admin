@@ -163,7 +163,9 @@ export function debounce(fn, ms = 200) {
 // CSV compatible con Excel en español (separador ;).
 export function toCsv(headers, rows) {
   const esc = (value) => {
-    const text = value === null || value === undefined ? '' : String(value);
+    let text = value === null || value === undefined ? '' : String(value);
+    // Nombres y teléfonos los escribe el alumno: un "=..." se ejecutaría como fórmula en Excel.
+    if (/^[=+\-@\t\r]/.test(text) && !/^-?\d+([.,]\d+)?$/.test(text)) text = `'${text}`;
     return /[";\n\r]/.test(text) ? `"${text.replace(/"/g, '""')}"` : text;
   };
   return [headers, ...rows].map((row) => row.map(esc).join(';')).join('\r\n');

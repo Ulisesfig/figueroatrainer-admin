@@ -24,6 +24,7 @@ todo lo que se cambia acá se ve enseguida en los otros lados. Solo entran cuent
 - **Vaciar todos los mensajes** de una vez, pidiendo escribir "VACIAR" para confirmar (1.2.1).
 - Aviso de escritorio cuando llega un mensaje nuevo, igual que para pagos y registros.
 - El formulario de Contacto ahora pide el teléfono (opcional): si lo dejan, se puede **responder por WhatsApp** además de por email (1.2.2).
+- **Actualizaciones firmadas (1.2.6):** cada versión se verifica con una firma propia antes de instalarse; una versión subida al bucket sin la clave privada se rechaza. El CSV exportado ya no ejecuta fórmulas escritas por alumnos (`=`, `+`, `-`, `@`).
 - **Actualizaciones automáticas activadas y probadas de punta a punta**: el repositorio de releases ([Ulisesfig/figueroatrainer-admin](https://github.com/Ulisesfig/figueroatrainer-admin)) está publicado y funcionando. Probado en la instalación real: detectó, descargó, verificó el hash e instaló la versión nueva sola, sin perder la sesión (1.2.3). La instalación ahora corre en silencio, sin ventanas intermedias (1.2.4).
 
 ## Novedades de la versión 1.1
@@ -72,8 +73,13 @@ vez sirve los archivos desde un bucket privado de Railway (ver `build.publish` e
 1. Subí el número de `version` en `package.json` (por ejemplo 1.2.4 → 1.2.5).
 2. Completá `tools/.env.updates` con las credenciales del bucket (una sola vez; mirá `tools/.env.updates.example`
    y `railway bucket credentials --bucket ft-admin-updates` si hay que regenerarlas).
-3. Ejecutá `npm run release`: compila el instalador (`npm run dist`) y sube el `.exe`, el `.blockmap` y el
-   `latest.yml` al bucket (`npm run publish-update`).
+3. Ejecutá `npm run release`: compila el instalador (`npm run dist`), lo firma y sube el `.exe`, el `.blockmap`,
+   `latest.sig` y por último `latest.yml` al bucket (`npm run publish-update`).
+
+**Firma de las actualizaciones (desde 1.2.6):** la app instalada solo instala una versión si `latest.sig` es una firma
+Ed25519 válida de esa versión y su sha512, hecha con `UPDATES_SIGNING_KEY` (en `tools/.env.updates`, fuera de git).
+La clave pública está en `src/updateSignature.js`. **Guardá una copia de `tools/.env.updates` en un lugar seguro:** si la
+clave privada se pierde, las apps instaladas no aceptan más actualizaciones y habría que reinstalarlas a mano.
 
 Las apps instaladas la descargan solas y avisan para reiniciar. Los avisos de escritorio y las actualizaciones solo
 funcionan en la app instalada (no con `npm start`).
