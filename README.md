@@ -24,6 +24,7 @@ todo lo que se cambia acá se ve enseguida en los otros lados. Solo entran cuent
 - **Vaciar todos los mensajes** de una vez, pidiendo escribir "VACIAR" para confirmar (1.2.1).
 - Aviso de escritorio cuando llega un mensaje nuevo, igual que para pagos y registros.
 - El formulario de Contacto ahora pide el teléfono (opcional): si lo dejan, se puede **responder por WhatsApp** además de por email (1.2.2).
+- **Alimentación (1.2.7):** nueva pestaña en el panel de cada alumno para fijar sus objetivos diarios (calorías, proteínas, carbohidratos y grasas, con cálculo de calorías desde los macros) y ver qué registró en los últimos 14 días, marcando cada día como en objetivo, debajo o arriba.
 - **Actualizaciones firmadas (1.2.6):** cada versión se verifica con una firma propia antes de instalarse; una versión subida al bucket sin la clave privada se rechaza. El CSV exportado ya no ejecuta fórmulas escritas por alumnos (`=`, `+`, `-`, `@`).
 - **Actualizaciones automáticas activadas y probadas de punta a punta**: el repositorio de releases ([Ulisesfig/figueroatrainer-admin](https://github.com/Ulisesfig/figueroatrainer-admin)) está publicado y funcionando. Probado en la instalación real: detectó, descargó, verificó el hash e instaló la versión nueva sola, sin perder la sesión (1.2.3). La instalación ahora corre en silencio, sin ventanas intermedias (1.2.4).
 

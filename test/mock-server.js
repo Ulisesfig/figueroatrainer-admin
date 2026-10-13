@@ -158,6 +158,16 @@ function createServer() {
         });
         return ok(res, { weeks, plannedPerWeek: 3 });
       }
+      if ((r = match(/^\/api\/admin\/users\/(\d+)\/nutrition-goals$/)) && m === 'PUT') {
+        db.nutritionGoals = db.nutritionGoals || {};
+        db.nutritionGoals[r[1]] = { kcal: body.kcal ?? null, protein: body.protein ?? null, carbs: body.carbs ?? null, fat: body.fat ?? null };
+        return ok(res, { goals: db.nutritionGoals[r[1]] });
+      }
+      if ((r = match(/^\/api\/admin\/users\/(\d+)\/nutrition$/))) {
+        const goals = (db.nutritionGoals || {})[r[1]] || null;
+        const day = (offset) => { const d = new Date(); d.setDate(d.getDate() - offset); return d.toISOString().slice(0, 10); };
+        return ok(res, { goals, days: [{ day: day(2), entries: 5, kcal: 2100, protein: 140, carbs: 230, fat: 70 }, { day: day(1), entries: 4, kcal: 1500, protein: 90, carbs: 160, fat: 50 }] });
+      }
       if ((r = match(/^\/api\/admin\/users\/(\d+)\/notes$/))) {
         const userId = Number(r[1]);
         if (m === 'GET') return ok(res, { notes: db.notes.filter((n) => n.user_id === userId) });

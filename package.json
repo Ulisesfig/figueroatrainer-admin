@@ -1,7 +1,7 @@
 {
   "name": "figueroa-trainer-admin",
   "productName": "Figueroa Trainer Admin",
-  "version": "1.2.6",
+  "version": "1.2.7",
   "description": "Programa de escritorio para administrar alumnos, planes, ejercicios y tienda de Figueroa Trainer",
   "main": "main.js",
   "author": "Figueroa Trainer",

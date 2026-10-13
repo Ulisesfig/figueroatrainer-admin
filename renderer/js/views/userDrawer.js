@@ -5,6 +5,7 @@ import { api, errorMessage } from '../lib/api.js';
 import { button, badge, avatar, field, textInput, selectInput, switchInput, emptyState, errorBox, loadingBlock, notify, openModal, openDrawer, confirmDialog, tabs, withBusy, notice, markInvalid } from '../lib/ui.js';
 import { loadPlans, loadUser } from '../lib/data.js';
 import { trackingTab, notesTab } from './userTracking.js';
+import { nutritionTab } from './userNutrition.js';
 import { fullName, formatDate, formatDateTime, formatWeight, toDateKey, todayKey, addMonthsKey, relativeDays, whatsappUrl, timeAgo } from '../lib/format.js';
 
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
@@ -126,7 +127,7 @@ export function openUserDrawer({ user: initial, app, onChanged, onDeleted, onClo
   const bodyHost = h('div', { class: 'drawer__body' });
   const headHost = h('div', { class: 'row grow', style: { minWidth: 0 } });
 
-  const tabsEl = tabs([{ value: 'data', label: 'Datos' }, { value: 'plans', label: 'Planes' }, { value: 'weights', label: 'Pesos' }, { value: 'tracking', label: 'Seguimiento' }, { value: 'notes', label: 'Notas' }, { value: 'account', label: 'Cuenta' }], activeTab, (value) => { activeTab = value; paintTab(); });
+  const tabsEl = tabs([{ value: 'data', label: 'Datos' }, { value: 'plans', label: 'Planes' }, { value: 'weights', label: 'Pesos' }, { value: 'tracking', label: 'Seguimiento' }, { value: 'nutrition', label: 'Alimentación' }, { value: 'notes', label: 'Notas' }, { value: 'account', label: 'Cuenta' }], activeTab, (value) => { activeTab = value; paintTab(); });
 
   function paintHead() {
     const isAdmin = String(user.role).toLowerCase() === 'admin';
@@ -152,6 +153,7 @@ export function openUserDrawer({ user: initial, app, onChanged, onDeleted, onClo
     else if (activeTab === 'plans') plansTab(bodyHost);
     else if (activeTab === 'weights') weightsTab(bodyHost);
     else if (activeTab === 'tracking') trackingTab(bodyHost, user, () => !destroyed && activeTab === 'tracking');
+    else if (activeTab === 'nutrition') nutritionTab(bodyHost, user, () => !destroyed && activeTab === 'nutrition');
     else if (activeTab === 'notes') notesTab(bodyHost, user, () => !destroyed && activeTab === 'notes');
     else mount(bodyHost, accountTab());
   }

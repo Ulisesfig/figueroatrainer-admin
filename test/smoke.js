@@ -367,6 +367,24 @@ async function run() {
     await js(`document.dispatchEvent(new KeyboardEvent('keydown', { key: 'Escape', bubbles: true }))`);
   });
 
+  await step('Alimentación: objetivos y registro del alumno', async () => {
+    await go('#/users/3');
+    await waitFor(`Boolean(document.querySelector('.drawer'))`, 'drawer');
+    await clickText('.drawer .tabs__btn', 'Alimentación');
+    await waitFor(`document.querySelectorAll('.drawer tbody tr').length === 2`, 'días registrados');
+    await js(`(() => { const ins = [...document.querySelectorAll('.drawer input')]; const set = (i, v) => { i.value = v; i.dispatchEvent(new Event('input', { bubbles: true })); }; set(ins[1], '150'); set(ins[2], '250'); set(ins[3], '70'); return true; })()`);
+    await clickText('.drawer .btn', 'Usar kcal de los macros');
+    assert((await js(`document.querySelectorAll('.drawer input')[0].value`)) === '2230', 'debería calcular 150*4 + 250*4 + 70*9 = 2230 kcal');
+    await clickText('.drawer .btn', 'Guardar objetivos');
+    await waitFor(`document.querySelectorAll('.drawer tbody .badge').length === 2`, 'estado de cada día contra el objetivo');
+    const saved = (await api('/api/admin/users/3/nutrition')).goals;
+    assert(saved && saved.kcal === 2230 && saved.protein === 150, 'los objetivos deberían guardarse en el servidor');
+    const drawerText = await text('.drawer');
+    assert(drawerText.includes('En objetivo') && drawerText.includes('Debajo'), 'debería marcar cada día contra el objetivo');
+    await shot('28b-nutrition');
+    await js(`document.dispatchEvent(new KeyboardEvent('keydown', { key: 'Escape', bubbles: true }))`);
+  });
+
   await step('Inicio: tarjeta "Sin entrenar" y avisar a todos', async () => {
     await go('#/home');
     await waitFor(`document.querySelectorAll('.board__cell .board__value').length === 4 && !document.querySelector('.board .skeleton')`, 'inicio');
